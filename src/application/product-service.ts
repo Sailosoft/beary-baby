@@ -370,7 +370,10 @@ async function replaceRelations(
   await supabase.from("product_galleries").delete().eq("product_id", productId);
   if (input.categoryIds.length > 0) {
     const { error } = await supabase.from("product_categories").insert(
-      input.categoryIds.map((categoryId) => ({ productId, categoryId })),
+      input.categoryIds.map((categoryId) => ({
+        product_id: productId,
+        category_id: categoryId,
+      })),
     );
     if (error) throw error;
   }

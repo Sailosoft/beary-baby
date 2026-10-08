@@ -1,6 +1,10 @@
 import { listAllProductsAdmin, listFeaturedAdmin } from "@/application/product-service";
 import { FeaturedForm } from "@/components/admin/featured-form";
 
+// Admin pages read uncached data by design (always fresh). Opt this segment out
+// of instant-navigation validation so it may block on the server.
+export const instant = false;
+
 export default async function AdminFeaturedPage() {
   const [products, featured] = await Promise.all([
     listAllProductsAdmin(),

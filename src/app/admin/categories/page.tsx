@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { listCategories } from "@/application/category-service";
 import { deleteCategoryAction } from "@/app/actions/admin-actions";
 import { CategoryForm } from "@/components/admin/category-form";
@@ -31,12 +32,20 @@ export default async function AdminCategoriesPage() {
                 <td className="font-mono text-xs">{c.slug}</td>
                 <td>{c.order}</td>
                 <td className="text-right">
-                  <form action={deleteCategoryAction}>
-                    <input type="hidden" name="id" value={c.id} />
-                    <button type="submit" className="btn btn-ghost btn-xs text-error">
-                      Delete
-                    </button>
-                  </form>
+                  <div className="flex justify-end gap-1">
+                    <Link
+                      href={`/admin/categories/${c.id}`}
+                      className="btn btn-ghost btn-xs"
+                    >
+                      Edit
+                    </Link>
+                    <form action={deleteCategoryAction}>
+                      <input type="hidden" name="id" value={c.id} />
+                      <button type="submit" className="btn btn-ghost btn-xs text-error">
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

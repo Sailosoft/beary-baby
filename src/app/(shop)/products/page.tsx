@@ -64,9 +64,7 @@ export default async function ProductsPage({
 
       <div className="max-w-6xl mx-auto w-full px-4 py-8 flex flex-col gap-6">
         <Suspense
-          fallback={
-            <div className="skeleton h-24 rounded-3xl bg-pink-100" />
-          }
+          fallback={<div className="skeleton h-9 w-44 rounded-full bg-pink-100" />}
         >
           <FiltersSlot />
         </Suspense>

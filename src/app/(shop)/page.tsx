@@ -93,20 +93,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section id="categories" className="max-w-6xl mx-auto w-full px-4 py-14">
-        <SectionHeader
-          eyebrow="Browse by collection"
-          title="Categories"
-          subtitle="Browse our collections of cute finds and office essentials."
-        />
-        <Suspense fallback={<CategorySkeleton />}>
-          <CategorySection />
-        </Suspense>
-      </section>
-
       {/* Featured products */}
-      <section className="max-w-6xl mx-auto w-full px-4 pb-20">
+      <section className="max-w-6xl mx-auto w-full px-4 py-14">
         <SectionHeader
           eyebrow="Customer favorites"
           title="Featured Products"
@@ -114,6 +102,18 @@ export default function Home() {
         />
         <Suspense fallback={<FeaturedSkeleton />}>
           <FeaturedSection />
+        </Suspense>
+      </section>
+
+      {/* Categories */}
+      <section id="categories" className="max-w-6xl mx-auto w-full px-4 pb-20">
+        <SectionHeader
+          eyebrow="Browse by collection"
+          title="Categories"
+          subtitle="Browse our collections of cute finds and office essentials."
+        />
+        <Suspense fallback={<CategorySkeleton />}>
+          <CategorySection />
         </Suspense>
       </section>
     </div>

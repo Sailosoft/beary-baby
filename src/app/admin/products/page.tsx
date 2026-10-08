@@ -8,6 +8,10 @@ import { listCategories } from "@/application/category-service";
 import { formatPeso } from "@/domain/product";
 import { deleteProductAction } from "@/app/actions/admin-actions";
 
+// Admin pages read uncached data by design (always fresh). Opt this segment out
+// of instant-navigation validation so it may block on the server.
+export const instant = false;
+
 export default async function AdminProductsPage() {
   const [products, categories] = await Promise.all([
     listAllProductsAdmin(),
