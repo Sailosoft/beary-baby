@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { listCategories } from "@/application/category-service";
-import { deleteCategoryAction } from "@/app/actions/admin-actions";
+import { CategoryDeleteButton } from "@/components/admin/category-delete-button";
 import { CategoryForm } from "@/components/admin/category-form";
 
 export default async function AdminCategoriesPage() {
@@ -15,14 +16,14 @@ export default async function AdminCategoriesPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white border border-pink-100 rounded-box">
+      <div className="overflow-x-auto md:overflow-visible bg-white border border-pink-100 rounded-box">
         <table className="table table-sm">
           <thead>
             <tr className="text-pink-700">
               <th>Name</th>
               <th>Slug</th>
               <th>Order</th>
-              <th></th>
+              <th className="text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -32,19 +33,16 @@ export default async function AdminCategoriesPage() {
                 <td className="font-mono text-xs">{c.slug}</td>
                 <td>{c.order}</td>
                 <td className="text-right">
-                  <div className="flex justify-end gap-1">
+                  <div className="flex justify-end items-center gap-1">
                     <Link
                       href={`/admin/categories/${c.id}`}
-                      className="btn btn-ghost btn-xs"
+                      aria-label={`Edit ${c.name}`}
+                      data-tip="Edit"
+                      className="btn btn-ghost btn-sm btn-circle tooltip tooltip-top"
                     >
-                      Edit
+                      <Pencil className="size-4" />
                     </Link>
-                    <form action={deleteCategoryAction}>
-                      <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className="btn btn-ghost btn-xs text-error">
-                        Delete
-                      </button>
-                    </form>
+                    <CategoryDeleteButton id={c.id} name={c.name} />
                   </div>
                 </td>
               </tr>

@@ -8,6 +8,8 @@ import type { Category } from "@/domain/product";
 export type CategoryInput = {
   name: string;
   imageUrl?: string | null;
+  imageProvider?: string | null;
+  imageUploadId?: string | null;
   order?: number;
 };
 
@@ -17,6 +19,8 @@ function toCategory(row: CategoryRow): Category {
     name: row.name,
     slug: row.slug,
     imageUrl: row.image_url,
+    imageProvider: row.image_provider ?? null,
+    imageUploadId: row.image_upload_id ?? null,
     order: row.order,
   };
 }
@@ -74,6 +78,8 @@ export async function createCategory(input: CategoryInput): Promise<Category> {
       name: input.name,
       slug,
       image_url: input.imageUrl ?? null,
+      image_provider: input.imageProvider ?? null,
+      image_upload_id: input.imageUploadId ?? null,
       order: input.order ?? 0,
     })
     .select("*")
@@ -97,6 +103,8 @@ export async function updateCategory(
       name: input.name,
       slug,
       image_url: input.imageUrl ?? null,
+      image_provider: input.imageProvider ?? null,
+      image_upload_id: input.imageUploadId ?? null,
       order: input.order ?? 0,
       updated_at: new Date().toISOString(),
     })

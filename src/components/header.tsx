@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useCart } from "@/components/cart/cart-provider";
 
 export function Header() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { count, setOpen } = useCart();
   const [q, setQ] = useState(searchParams.get("q") ?? "");
   const [pending, startTransition] = useTransition();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -63,6 +65,12 @@ export function Header() {
             >
               Products
             </Link>
+            <Link
+              href="/orders"
+              className="btn btn-ghost btn-sm rounded-full text-pink-700 hover:bg-pink-100/70 hover:text-beary-pink-deep"
+            >
+              Orders
+            </Link>
           </nav>
         </div>
         <div className="navbar-end gap-2">
@@ -86,6 +94,19 @@ export function Header() {
               🔍
             </button>
           </form>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="btn btn-ghost btn-sm btn-circle relative"
+            aria-label={`Open cart${count > 0 ? ` (${count} items)` : ""}`}
+          >
+            🛒
+            {count > 0 && (
+              <span className="badge badge-primary badge-xs absolute -right-0.5 -top-0.5">
+                {count}
+              </span>
+            )}
+          </button>
           <Link
             href="/login"
             className="btn btn-sm rounded-full border-pink-200 bg-white/70 text-pink-600 hover:border-pink-300 hover:bg-white hidden sm:inline-flex"
@@ -140,6 +161,27 @@ export function Header() {
                 >
                   Products
                 </Link>
+              </li>
+              <li>
+                <Link
+                  href="/orders"
+                  onClick={closeMenu}
+                  className="rounded-full text-pink-700"
+                >
+                  Orders
+                </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeMenu();
+                    setOpen(true);
+                  }}
+                  className="rounded-full text-pink-700"
+                >
+                  Cart{count > 0 ? ` (${count})` : ""}
+                </button>
               </li>
               <li>
                 <Link

@@ -87,8 +87,10 @@ export async function importProductsFromCsv(csvText: string): Promise<ImportResu
       stocks: parseNumber(raw.stocks) ?? null,
       imageUrl: raw.imageUrl?.trim() || "",
       displayPrice: parseBool(raw.displayPrice, true),
+      isPreorder: parseBool(raw.isPreorder, false),
       categoryIds,
-      galleryUrls: [],
+      galleryImages: [],
+      variants: [],
     };
 
     try {

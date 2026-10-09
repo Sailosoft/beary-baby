@@ -5,13 +5,16 @@ import type {
   CategoryRow,
   ProductGalleryRow,
   ProductRow,
+  ProductVariantRow,
 } from "@/infrastructure/supabase/types";
 import { slugifyName } from "@/domain/category";
 import {
+  computePriceRange,
   isOutOfStock,
   type Category,
   type Product,
   type ProductGallery,
+  type ProductVariant,
 } from "@/domain/product";
 
 export type ProductSort =
@@ -62,6 +65,10 @@ function toProduct(row: ProductRow): Product {
     stocks: row.stocks,
     imageUrl: row.image_url,
     displayPrice: row.display_price,
+    isPreorder: row.is_preorder ?? false,
+    imageProvider: row.image_provider ?? null,
+    imageUploadId: row.image_upload_id ?? null,
+    priceRange: row.price_range ?? null,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
   };
@@ -224,7 +231,7 @@ export async function getProductBySlug(
   const row = (data as ProductRow[])[0];
   if (!row) return null;
 
-  const [catsRes, galRes] = await Promise.all([
+  const [catsRes, galRes, varRes] = await Promise.all([
     supabase
       .from("product_categories")
       .select("categories(*)")
@@ -234,9 +241,15 @@ export async function getProductBySlug(
       .select("*")
       .eq("product_id", row.id)
       .order("order", { ascending: true }),
+    supabase
+      .from("product_variants")
+      .select("*")
+      .eq("product_id", row.id)
+      .order("order", { ascending: true }),
   ]);
   if (catsRes.error) throw catsRes.error;
   if (galRes.error) throw galRes.error;
+  if (varRes.error) throw varRes.error;
 
   const cats = (catsRes.data as { categories: CategoryRow | CategoryRow[] }[])
     .flatMap((r) => (Array.isArray(r.categories) ? r.categories : [r.categories]))
@@ -254,10 +267,14 @@ export async function getProductBySlug(
     id: g.id,
     productId: g.product_id,
     imageUrl: g.image_url,
+    imageProvider: g.image_provider ?? null,
+    imageUploadId: g.image_upload_id ?? null,
     order: g.order,
   }));
 
-  return { ...toProduct(row), categories: cats, galleries };
+  const variants = (varRes.data as ProductVariantRow[]).map(toVariant);
+
+  return { ...toProduct(row), categories: cats, galleries, variants };
 }
 
 /**
@@ -331,6 +348,21 @@ export async function getFeaturedProducts(): Promise<
 // Admin mutations (no caching — always fresh)
 // ---------------------------------------------------------------------------
 
+export type ProductGalleryInput = {
+  url: string;
+  provider?: string | null;
+  uploadId?: string | null;
+};
+
+export type VariantInput = {
+  label: string;
+  sku?: string | null;
+  price?: number | null;
+  stocks?: number | null;
+  available?: boolean;
+  order?: number;
+};
+
 export type ProductInput = {
   name: string;
   code: string;
@@ -340,9 +372,26 @@ export type ProductInput = {
   stocks?: number | null;
   imageUrl: string;
   displayPrice: boolean;
+  isPreorder: boolean;
+  imageProvider?: string | null;
+  imageUploadId?: string | null;
   categoryIds: string[];
-  galleryUrls: string[];
+  galleryImages: ProductGalleryInput[];
+  variants: VariantInput[];
 };
+
+function toVariant(row: ProductVariantRow): ProductVariant {
+  return {
+    id: row.id,
+    productId: row.product_id,
+    label: row.label,
+    sku: row.sku,
+    price: row.price,
+    stocks: row.stocks,
+    available: row.available,
+    order: row.order,
+  };
+}
 
 async function assertUnique(
   slug: string,
@@ -377,16 +426,47 @@ async function replaceRelations(
     );
     if (error) throw error;
   }
-  if (input.galleryUrls.length > 0) {
+  if (input.galleryImages.length > 0) {
     const { error } = await supabase.from("product_galleries").insert(
-      input.galleryUrls.map((imageUrl, i) => ({
+      input.galleryImages.map((image, i) => ({
         product_id: productId,
-        image_url: imageUrl,
+        image_url: image.url,
+        image_provider: image.provider ?? null,
+        image_upload_id: image.uploadId ?? null,
         order: i,
       })),
     );
     if (error) throw error;
   }
+
+  // Variants are replaced wholesale; ids change on every save (labels/prices
+  // are snapshotted on orders, so past orders stay correct).
+  await supabase.from("product_variants").delete().eq("product_id", productId);
+  if (input.variants.length > 0) {
+    const { error } = await supabase.from("product_variants").insert(
+      input.variants.map((variant, i) => ({
+        product_id: productId,
+        label: variant.label,
+        sku: variant.sku ?? null,
+        price: variant.price ?? null,
+        stocks: variant.stocks ?? null,
+        available: variant.available ?? true,
+        order: variant.order ?? i,
+      })),
+    );
+    if (error) throw error;
+  }
+
+  // Cache the computed price range on the product.
+  const priceRange = computePriceRange(
+    { price: input.price, displayPrice: input.displayPrice },
+    input.variants,
+  );
+  const { error: rangeError } = await supabase
+    .from("products")
+    .update({ price_range: priceRange })
+    .eq("id", productId);
+  if (rangeError) throw rangeError;
 }
 
 export async function createProduct(input: ProductInput): Promise<Product> {
@@ -404,6 +484,9 @@ export async function createProduct(input: ProductInput): Promise<Product> {
       stocks: input.stocks ?? null,
       image_url: input.imageUrl,
       display_price: input.displayPrice,
+      is_preorder: input.isPreorder,
+      image_provider: input.imageProvider ?? null,
+      image_upload_id: input.imageUploadId ?? null,
     })
     .select("*")
     .single();
@@ -438,6 +521,9 @@ export async function updateProduct(
       stocks: input.stocks ?? null,
       image_url: input.imageUrl,
       display_price: input.displayPrice,
+      is_preorder: input.isPreorder,
+      image_provider: input.imageProvider ?? null,
+      image_upload_id: input.imageUploadId ?? null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
@@ -463,7 +549,7 @@ export async function getProductById(id: string): Promise<ProductDetail | null> 
   if (error) throw error;
   const row = (data as ProductRow[])[0];
   if (!row) return null;
-  const [catsRes, galRes] = await Promise.all([
+  const [catsRes, galRes, varRes] = await Promise.all([
     supabase
       .from("product_categories")
       .select("category_id")
@@ -473,9 +559,15 @@ export async function getProductById(id: string): Promise<ProductDetail | null> 
       .select("*")
       .eq("product_id", id)
       .order("order", { ascending: true }),
+    supabase
+      .from("product_variants")
+      .select("*")
+      .eq("product_id", id)
+      .order("order", { ascending: true }),
   ]);
   if (catsRes.error) throw catsRes.error;
   if (galRes.error) throw galRes.error;
+  if (varRes.error) throw varRes.error;
   return {
     ...toProduct(row),
     categories: (catsRes.data as { category_id: string }[]).map((c) => ({
@@ -489,13 +581,20 @@ export async function getProductById(id: string): Promise<ProductDetail | null> 
       id: g.id,
       productId: g.product_id,
       imageUrl: g.image_url,
+      imageProvider: g.image_provider ?? null,
+      imageUploadId: g.image_upload_id ?? null,
       order: g.order,
     })),
+    variants: (varRes.data as ProductVariantRow[]).map(toVariant),
   };
 }
 
 export async function listAllProductsAdmin(): Promise<
-  (Product & { categories: Category[]; galleries: ProductGallery[] })[]
+  (Product & {
+    categories: Category[];
+    galleries: ProductGallery[];
+    variants: ProductVariant[];
+  })[]
 > {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -505,15 +604,36 @@ export async function listAllProductsAdmin(): Promise<
   if (error) throw error;
   const items = (data as ProductRow[]).map(toProduct);
   const ids = items.map((p) => p.id);
-  const [categoriesMap, galleriesMap] = await Promise.all([
+  const [categoriesMap, galleriesMap, variantsMap] = await Promise.all([
     loadCategoriesMap(ids),
     loadGalleriesMap(ids),
+    loadVariantsMap(ids),
   ]);
   return items.map((p) => ({
     ...p,
     categories: categoriesMap.get(p.id) ?? [],
     galleries: galleriesMap.get(p.id) ?? [],
+    variants: variantsMap.get(p.id) ?? [],
   }));
+}
+
+async function loadVariantsMap(
+  ids: string[],
+): Promise<Map<string, ProductVariant[]>> {
+  const map = new Map<string, ProductVariant[]>();
+  if (ids.length === 0) return map;
+  const { data, error } = await getSupabase()
+    .from("product_variants")
+    .select("*")
+    .in("product_id", ids)
+    .order("order", { ascending: true });
+  if (error) throw error;
+  for (const row of data as ProductVariantRow[]) {
+    const list = map.get(row.product_id) ?? [];
+    list.push(toVariant(row));
+    map.set(row.product_id, list);
+  }
+  return map;
 }
 
 async function loadGalleriesMap(
@@ -533,6 +653,8 @@ async function loadGalleriesMap(
       id: g.id,
       productId: g.product_id,
       imageUrl: g.image_url,
+      imageProvider: g.image_provider ?? null,
+      imageUploadId: g.image_upload_id ?? null,
       order: g.order,
     });
     map.set(g.product_id, list);

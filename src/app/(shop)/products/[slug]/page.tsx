@@ -8,6 +8,7 @@ import {
 import { formatPeso, isOutOfStock } from "@/domain/product";
 import { GalleryCarousel } from "@/components/gallery-carousel";
 import { ProductCard } from "@/components/product-card";
+import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 
 export default async function ProductDetailPage({
   params,
@@ -98,18 +99,27 @@ async function ProductDetail({
             {product.displayPrice ? (
               <p className="text-3xl font-extrabold">
                 <span className="beary-text-gradient">
-                  {formatPeso(product.price)}
+                  {product.priceRange ?? formatPeso(product.price)}
                 </span>
               </p>
             ) : (
               <p className="text-lg text-pink-400">Price on inquiry</p>
             )}
 
-            {outOfStock && (
-              <span className="w-fit rounded-full bg-rose-500/90 px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-rose-200">
-                Out of stock
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {product.isPreorder && !outOfStock && (
+                <span className="rounded-full bg-violet-500/90 px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-violet-200">
+                  Pre-order
+                </span>
+              )}
+              {outOfStock && (
+                <span className="rounded-full bg-rose-500/90 px-4 py-1.5 text-xs font-bold text-white shadow-md shadow-rose-200">
+                  Out of stock
+                </span>
+              )}
+            </div>
+
+            <AddToCartButton product={product} disabled={outOfStock} />
 
             <div
               className="h-px w-full bg-gradient-to-r from-pink-200 via-rose-200 to-transparent"

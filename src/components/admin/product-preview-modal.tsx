@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Eye } from "lucide-react";
 import { GalleryCarousel } from "@/components/gallery-carousel";
 import { formatPeso, isOutOfStock, type Product } from "@/domain/product";
 
@@ -74,6 +75,10 @@ export function ProductPreviewModal({
                   <span className="absolute left-3 top-3 rounded-full bg-rose-500/90 px-3 py-1 text-[11px] font-bold text-white shadow">
                     Out of stock
                   </span>
+                ) : product.isPreorder ? (
+                  <span className="absolute left-3 top-3 rounded-full bg-violet-500/90 px-3 py-1 text-[11px] font-bold text-white shadow">
+                    Pre-order
+                  </span>
                 ) : (
                   category && (
                     <span className="absolute left-3 top-3 rounded-full bg-white/85 px-3 py-1 text-[11px] font-semibold text-beary-pink-deep backdrop-blur">
@@ -89,7 +94,7 @@ export function ProductPreviewModal({
                 {product.displayPrice ? (
                   <p className="text-base font-extrabold">
                     <span className="beary-text-gradient">
-                      {formatPeso(product.price)}
+                      {product.priceRange ?? formatPeso(product.price)}
                     </span>
                   </p>
                 ) : (
@@ -127,10 +132,12 @@ export function ProductPreviewButton({
     <>
       <button
         type="button"
-        className="btn btn-ghost btn-xs"
+        aria-label="Preview product"
+        data-tip="Preview"
+        className="btn btn-ghost btn-sm btn-circle tooltip tooltip-top"
         onClick={() => setOpen(true)}
       >
-        Preview
+        <Eye className="size-4" />
       </button>
       {open && (
         <ProductPreviewModal product={product} onClose={() => setOpen(false)} />

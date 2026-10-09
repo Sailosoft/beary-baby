@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { Header } from "@/components/header";
+import { CartProvider } from "@/components/cart/cart-provider";
+import { CartDrawer } from "@/components/cart/cart-drawer";
 
 // Customer-facing shop chrome: sticky header with search + site footer.
 export default function ShopLayout({
@@ -8,7 +10,7 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <CartProvider>
       <Suspense fallback={<div className="h-16 bg-white/80 border-b border-pink-100" />}>
         <Header />
       </Suspense>
@@ -33,6 +35,7 @@ export default function ShopLayout({
           </aside>
         </div>
       </footer>
-    </>
+      <CartDrawer />
+    </CartProvider>
   );
 }

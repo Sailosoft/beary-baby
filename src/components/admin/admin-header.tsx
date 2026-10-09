@@ -8,7 +8,9 @@ const NAV_ITEMS = [
   { href: "/admin/products", label: "Products" },
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/featured", label: "Featured" },
+  { href: "/admin/orders", label: "Orders" },
   { href: "/admin/import", label: "Import CSV" },
+  { href: "/admin/uploads", label: "Uploads" },
 ];
 
 export function AdminHeader({ username }: { username: string }) {

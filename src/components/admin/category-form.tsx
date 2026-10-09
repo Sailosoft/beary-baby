@@ -1,8 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { Category } from "@/domain/product";
 import { saveCategoryAction, type ActionState } from "@/app/actions/admin-actions";
+import { UrlField } from "@/components/admin/url-field";
+import { ImageUploadButton } from "@/components/admin/upload-field";
 
 export function CategoryForm({ category }: { category?: Category }) {
   const [state, formAction, pending] = useActionState(
@@ -10,9 +12,29 @@ export function CategoryForm({ category }: { category?: Category }) {
     undefined as ActionState | undefined,
   );
 
+  const [imageMeta, setImageMeta] = useState<{
+    url: string;
+    provider: string;
+    uploadId: string;
+  } | null>(
+    category?.imageProvider
+      ? {
+          url: category.imageUrl ?? "",
+          provider: category.imageProvider,
+          uploadId: category.imageUploadId ?? "",
+        }
+      : null,
+  );
+
   return (
     <form action={formAction} className="flex flex-col gap-3 w-full min-w-0">
       {category && <input type="hidden" name="id" value={category.id} />}
+      <input
+        type="hidden"
+        name="imageMeta"
+        value={imageMeta ? JSON.stringify(imageMeta) : ""}
+        readOnly
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-w-0">
         <label className="form-control min-w-0">
           <span className="label-text text-pink-700">Name *</span>
@@ -23,15 +45,26 @@ export function CategoryForm({ category }: { category?: Category }) {
             className="input input-bordered bg-white w-full"
           />
         </label>
-        <label className="form-control min-w-0">
+        <div className="form-control min-w-0">
           <span className="label-text text-pink-700">Image URL (optional)</span>
-          <input
+          <UrlField
             name="imageUrl"
-            type="url"
             defaultValue={category?.imageUrl ?? ""}
-            className="input input-bordered bg-white w-full"
+            placeholder="https://i.ibb.co/…"
+            trailingSlot={({ setValue }) => (
+              <ImageUploadButton
+                onUploaded={(uploaded) => {
+                  setValue(uploaded.url);
+                  setImageMeta({
+                    url: uploaded.url,
+                    provider: uploaded.provider,
+                    uploadId: uploaded.uploadId,
+                  });
+                }}
+              />
+            )}
           />
-        </label>
+        </div>
         <label className="form-control min-w-0">
           <span className="label-text text-pink-700">Order</span>
           <input

@@ -1,12 +1,13 @@
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import {
   listAllProductsAdmin,
   isOutOfStock,
 } from "@/application/product-service";
 import { ProductPreviewButton } from "@/components/admin/product-preview-modal";
+import { ProductDeleteButton } from "@/components/admin/product-delete-button";
 import { listCategories } from "@/application/category-service";
 import { formatPeso } from "@/domain/product";
-import { deleteProductAction } from "@/app/actions/admin-actions";
 
 // Admin pages read uncached data by design (always fresh). Opt this segment out
 // of instant-navigation validation so it may block on the server.
@@ -27,7 +28,7 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      <div className="overflow-x-auto bg-white border border-pink-100 rounded-box">
+      <div className="overflow-x-auto md:overflow-visible bg-white border border-pink-100 rounded-box">
         <table className="table table-sm">
           <thead>
             <tr className="text-pink-700">
@@ -59,21 +60,23 @@ export default async function AdminProductsPage() {
                   ) : (
                     <span className="badge badge-success badge-sm">Available</span>
                   )}
+                  {p.isPreorder && (
+                    <span className="badge badge-accent badge-sm ms-1">Pre-order</span>
+                  )}
                 </td>
                 <td className="text-right whitespace-nowrap">
-                  <ProductPreviewButton product={p} />
-                  <Link
-                    href={`/admin/products/${p.id}`}
-                    className="btn btn-ghost btn-xs"
-                  >
-                    Edit
-                  </Link>
-                  <form action={deleteProductAction} className="inline">
-                    <input type="hidden" name="id" value={p.id} />
-                    <button type="submit" className="btn btn-ghost btn-xs text-error">
-                      Delete
-                    </button>
-                  </form>
+                  <div className="flex justify-end items-center gap-1">
+                    <ProductPreviewButton product={p} />
+                    <Link
+                      href={`/admin/products/${p.id}`}
+                      aria-label={`Edit ${p.name}`}
+                      data-tip="Edit"
+                      className="btn btn-ghost btn-sm btn-circle tooltip tooltip-top"
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
+                    <ProductDeleteButton id={p.id} name={p.name} />
+                  </div>
                 </td>
               </tr>
             ))}
