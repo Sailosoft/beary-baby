@@ -10,8 +10,10 @@ export default function LoginPage() {
     <div className="max-w-sm mx-auto px-4 py-16">
       <div className="card bg-white border border-pink-100 shadow-md">
         <div className="card-body gap-4">
-          <h1 className="card-title justify-center text-pink-900 text-xl">
-            🧸 Admin Login
+          <h1 className="card-title justify-center gap-2 text-pink-900 text-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/beary.ico" alt="" className="h-6 w-6 rounded-full" aria-hidden />
+            Admin Login
           </h1>
           <form action={formAction} className="flex flex-col gap-3">
             <label className="form-control">

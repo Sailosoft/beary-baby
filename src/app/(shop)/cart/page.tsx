@@ -37,9 +37,8 @@ export default function CartPage() {
 
       {items.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-3xl border border-pink-100 bg-white py-16 text-center">
-          <div className="text-4xl" aria-hidden>
-            🧸
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/beary.ico" alt="" className="h-12 w-12 rounded-full" aria-hidden />
           <p className="text-sm text-pink-500">Your cart is empty.</p>
           <Link href="/products" className="beary-btn btn rounded-full px-6">
             Browse products

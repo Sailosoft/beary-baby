@@ -28,11 +28,14 @@ export function AdminHeader({ username }: { username: string }) {
             href="/admin/products"
             className="btn btn-ghost gap-2 px-2 text-lg font-extrabold"
           >
-            <span
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 via-rose-400 to-orange-300 text-base shadow-md shadow-pink-200"
-              aria-hidden
-            >
-              🧸
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 via-rose-400 to-orange-300 p-1.5 shadow-md shadow-pink-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/beary.ico"
+                alt=""
+                className="h-full w-full rounded-full object-contain"
+                aria-hidden
+              />
             </span>
             <span className="beary-text-gradient">Beary Baby</span>
             <span className="badge badge-sm border-pink-200 bg-pink-50 text-pink-600 font-semibold">

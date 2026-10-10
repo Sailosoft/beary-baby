@@ -4,8 +4,8 @@ import { listCategories } from "@/application/category-service";
 import { getFeaturedProducts } from "@/application/product-service";
 import { ProductCard } from "@/components/product-card";
 
-const HIGHLIGHTS = [
-  { icon: "🧸", label: "Cute stuff" },
+const HIGHLIGHTS: { icon?: string; img?: string; label: string }[] = [
+  { img: "/beary.ico", label: "Cute stuff" },
   { icon: "🗂️", label: "Office finds" },
   { icon: "🛍️", label: "Great deals" },
 ];
@@ -31,15 +31,21 @@ export default function Home() {
 
         <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-20 sm:pt-24 sm:pb-28 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-xs font-semibold text-beary-pink-deep shadow-sm backdrop-blur animate-fade-up">
-            🧸 Cute stuff & office finds
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/beary.ico" alt="" className="h-4 w-4 rounded-full" aria-hidden />
+            Cute stuff & office finds
           </span>
 
           <div className="mt-8 flex justify-center animate-fade-up" style={{ animationDelay: "80ms" }}>
             <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-white/70 shadow-lg shadow-pink-200/60 ring-8 ring-white/50 backdrop-blur animate-float">
               <span className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-300/40 to-orange-200/40 animate-pulse-ring" aria-hidden />
-              <span className="text-6xl relative" aria-hidden>
-                🧸
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/beary.ico"
+                alt=""
+                className="relative h-16 w-16 rounded-full object-contain"
+                aria-hidden
+              />
             </div>
           </div>
 
@@ -85,7 +91,14 @@ export default function Home() {
                 key={item.label}
                 className="flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-medium text-pink-800 shadow-sm ring-1 ring-white/80 backdrop-blur"
               >
-                <span aria-hidden>{item.icon}</span>
+                <span aria-hidden>
+                  {item.img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.img} alt="" className="h-4 w-4 rounded-full" />
+                  ) : (
+                    item.icon
+                  )}
+                </span>
                 {item.label}
               </li>
             ))}
@@ -172,11 +185,14 @@ async function CategorySection() {
                 className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
             ) : (
-              <span
-                className="flex h-full w-full items-center justify-center text-4xl transition-transform duration-500 ease-out group-hover:scale-110"
-                aria-hidden
-              >
-                🧸
+              <span className="flex h-full w-full items-center justify-center transition-transform duration-500 ease-out group-hover:scale-110">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/beary.ico"
+                  alt=""
+                  className="h-14 w-14 rounded-full object-contain"
+                  aria-hidden
+                />
               </span>
             )}
           </figure>

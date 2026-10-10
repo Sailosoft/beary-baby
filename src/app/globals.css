@@ -15,6 +15,7 @@
   --animate-gradient-shift: beary-gradient-shift 8s linear infinite;
   --animate-fade-up: beary-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pulse-ring: beary-pulse-ring 3s ease-in-out infinite;
+  --animate-glow: beary-glow 2.5s ease-in-out infinite;
 }
 
 @keyframes beary-float {
@@ -59,6 +60,20 @@
   50% {
     opacity: 0.9;
     transform: scale(1.12);
+  }
+}
+
+@keyframes beary-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px rgb(254 240 138 / 0.6),
+      0 0 14px rgb(253 224 71 / 0.4);
+  }
+  50% {
+    box-shadow:
+      0 0 14px rgb(254 240 138 / 0.95),
+      0 0 30px rgb(253 224 71 / 0.7);
   }
 }
 
@@ -115,6 +130,24 @@ body {
   opacity: 0.35;
   mix-blend-mode: soft-light;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* --------------------------------- Header --------------------------------- */
+
+.beary-header {
+  background-color: #f9cce3;
+  background-image:
+    /* Top left — soft violet / lavender */
+    radial-gradient(at 0% 0%, #e1d5f8 0px, transparent 55%),
+    /* Mid left — pastel pink */
+    radial-gradient(at 4% 70%, #f9cce3 0px, transparent 52%),
+    /* Center — bubblegum pink */
+    radial-gradient(at 50% 50%, #f3a9c8 0px, transparent 58%),
+    /* Top right — soft peach cream */
+    radial-gradient(at 100% 0%, #fde3c4 0px, transparent 55%),
+    /* Bottom right — warm blush pink */
+    radial-gradient(at 100% 100%, #f7c4d9 0px, transparent 55%);
+  color: #831843;
 }
 
 /* --------------------------------- Buttons -------------------------------- */
@@ -211,10 +244,12 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .beary-orb,
   .beary-gradient-text,
+  .beary-header,
   .animate-float,
   .animate-float-slow,
   .animate-fade-up,
-  .animate-pulse-ring {
+  .animate-pulse-ring,
+  .animate-glow {
     animation: none !important;
   }
 

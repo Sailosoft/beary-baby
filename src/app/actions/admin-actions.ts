@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { isAdminAuthenticated } from "@/infrastructure/auth/session";
 import {
   createCategory,
@@ -248,6 +249,9 @@ export async function saveProductAction(
     return { error: err instanceof Error ? err.message : "Failed to save" };
   }
   refresh();
+  if (!id) {
+    redirect("/admin/products");
+  }
   return { success: "Product saved." };
 }
 

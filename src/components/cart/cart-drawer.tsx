@@ -33,9 +33,8 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto p-4">
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-              <div className="text-4xl" aria-hidden>
-                🧸
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/beary.ico" alt="" className="h-12 w-12 rounded-full" aria-hidden />
               <p className="text-sm text-pink-500">Your cart is empty.</p>
               <Link
                 href="/products"

@@ -1,5 +1,6 @@
 import { listUploads } from "@/application/upload-service";
 import { CopyButton } from "@/components/admin/copy-button";
+import { ManualUploads } from "@/components/admin/manual-uploads";
 import { deleteUploadAction } from "@/app/actions/upload-actions";
 
 export const instant = false;
@@ -21,9 +22,12 @@ export default async function AdminUploadsPage() {
           Uploads ({uploads.length})
         </h2>
         <p className="text-xs text-pink-400">
-          Images uploaded to ImgBB from the product and category forms.
+          Copy a URL, then paste it into a product&apos;s Main image / Gallery
+          or a category&apos;s Image URL.
         </p>
       </div>
+
+      <ManualUploads />
 
       <div className="overflow-x-auto bg-white border border-pink-100 rounded-box">
         <table className="table table-sm">

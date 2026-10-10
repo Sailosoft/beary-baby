@@ -6,6 +6,7 @@ import {
 } from "@/application/product-service";
 import { ProductPreviewButton } from "@/components/admin/product-preview-modal";
 import { ProductDeleteButton } from "@/components/admin/product-delete-button";
+import { VariantBadge } from "@/components/admin/variant-badge";
 import { listCategories } from "@/application/category-service";
 import { formatPeso } from "@/domain/product";
 
@@ -50,7 +51,17 @@ export default async function AdminProductsPage() {
                     <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />
                   </div>
                 </td>
-                <td className="font-medium text-pink-900">{p.name}</td>
+                <td className="font-medium text-pink-900">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/admin/products/${p.id}/view`}
+                      className="link link-hover text-pink-900"
+                    >
+                      {p.name}
+                    </Link>
+                    <VariantBadge variants={p.variants} basePrice={p.price} />
+                  </div>
+                </td>
                 <td className="font-mono text-xs">{p.code}</td>
                 <td>{p.displayPrice ? formatPeso(p.price) : "—"}</td>
                 <td className="text-xs">{p.categories.map((c) => c.name).join(", ")}</td>

@@ -108,11 +108,14 @@ async function ProductList({
   if (result.items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-3xl border border-white/70 bg-white/70 py-20 text-center shadow-sm backdrop-blur">
-        <div
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-pink-100 via-rose-50 to-orange-100 text-4xl"
-          aria-hidden
-        >
-          🧸
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-pink-100 via-rose-50 to-orange-100 p-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/beary.ico"
+            alt=""
+            className="h-full w-full rounded-full object-contain"
+            aria-hidden
+          />
         </div>
         <p className="text-lg font-bold text-pink-900">No products found</p>
         <p className="text-sm text-pink-500">

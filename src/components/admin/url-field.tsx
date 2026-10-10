@@ -95,10 +95,12 @@ export function UrlListField({
   name,
   defaultValue = "",
   trailingSlot,
+  footerSlot,
 }: {
   name: string;
   defaultValue?: string;
   trailingSlot?: (field: UrlFieldControl) => React.ReactNode;
+  footerSlot?: (api: { addValues: (urls: string[]) => void }) => React.ReactNode;
 }) {
   const initial = defaultValue
     .split("\n")
@@ -122,6 +124,15 @@ export function UrlListField({
 
   function removeRow(index: number) {
     setRows((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addValues(urls: string[]) {
+    const cleaned = urls.map((url) => url.trim()).filter(Boolean);
+    if (cleaned.length === 0) return;
+    setRows((prev) => [
+      ...prev,
+      ...cleaned.map((value) => ({ key: nextRowKey(), value })),
+    ]);
   }
 
   async function handlePaste(index: number) {
@@ -187,13 +198,16 @@ export function UrlListField({
           {trailingSlot?.({ value: row.value, setValue: (v) => setValueAt(index, v) })}
         </div>
       ))}
-      <button
-        type="button"
-        onClick={addRow}
-        className="btn btn-ghost btn-xs w-fit text-beary-pink-deep"
-      >
-        + Add URL
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={addRow}
+          className="btn btn-ghost btn-xs w-fit text-beary-pink-deep"
+        >
+          + Add URL
+        </button>
+        {footerSlot?.({ addValues })}
+      </div>
       <input type="hidden" name={name} value={serialized} readOnly />
     </div>
   );

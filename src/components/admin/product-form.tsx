@@ -5,6 +5,7 @@ import type { Category, Product } from "@/domain/product";
 import { saveProductAction, type ActionState } from "@/app/actions/admin-actions";
 import { UrlField, UrlListField } from "@/components/admin/url-field";
 import { ImageUploadButton } from "@/components/admin/upload-field";
+import { MultiImageUploadButton } from "@/components/admin/multi-image-upload";
 import { VariantEditor } from "@/components/admin/variant-editor";
 
 type GalleryMeta = Record<string, { provider: string; uploadId: string }>;
@@ -173,6 +174,21 @@ export function ProductForm({
                   return next;
                 });
               }}
+            />
+          )}
+          footerSlot={({ addValues }) => (
+            <MultiImageUploadButton
+              label="Upload images"
+              onUploaded={(uploaded) => {
+                setGalleryMeta((prev) => ({
+                  ...prev,
+                  [uploaded.url]: {
+                    provider: uploaded.provider,
+                    uploadId: uploaded.uploadId,
+                  },
+                }));
+              }}
+              onComplete={(values) => addValues(values.map((v) => v.url))}
             />
           )}
         />

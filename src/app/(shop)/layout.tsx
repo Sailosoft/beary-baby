@@ -22,11 +22,14 @@ export default function ShopLayout({
         />
         <div className="footer footer-center max-w-6xl mx-auto p-8 text-sm text-beary-pink-deep">
           <aside className="flex flex-col items-center gap-2">
-            <span
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 via-rose-400 to-orange-300 shadow-md shadow-pink-200"
-              aria-hidden
-            >
-              🧸
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-pink-400 via-rose-400 to-orange-300 p-1.5 shadow-md shadow-pink-200">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/beary.ico"
+                alt=""
+                className="h-full w-full rounded-full object-contain"
+                aria-hidden
+              />
             </span>
             <p>
               <span className="font-bold beary-text-gradient">Beary Baby</span>
